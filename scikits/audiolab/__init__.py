@@ -32,6 +32,14 @@ from pysndfile import Sndfile, Format, available_file_formats, \
 #        sdifread, wavwrite, aiffwrite, flacwrite, auwrite, sdifwrite
 from pysndfile.matapi import *
 
+try:
+    from mp3sndfile import MP3Sndfile, SndfileFactory, mp3read
+    PySndfile = Sndfile
+    Sndfile = SndfileFactory
+except ImportError:
+    # MP3 files are not supported.
+    pass
+
 from soundio import play
 __all__ = filter(lambda s:not s.startswith('_'),dir())
 
