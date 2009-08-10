@@ -7,13 +7,13 @@ import os
 import numpy as np
 from numpy.testing import *
 
-from scikits.audiolab import MP3Sndfile, mp3read, wavread
+from scikits.audiolab import MP3Sndfile, mp3read, Sndfile, wavread
 
 from testcommon import TEST_DATA_DIR
 #TEST_DATA_DIR = '/home/ronw/tmp'
 
 class TestMP3Sndfile():
-    def test_MP3Sndfile_constructor(self): 
+    def test_constructor(self): 
         random.seed(1)
         sndfile = MP3Sndfile(self.mp3filename)
         self.assertEqual(sndfile.samplerate, 44100)
@@ -144,9 +144,11 @@ class TestMP3Sndfile():
         rmse = np.sqrt(np.mean((dwav - dmp3)**2))
         self.assert_(rmse < 1e-4)
 
+
 class TestMP3Sndfile_Mono(TestMP3Sndfile, NumpyTestCase):
     mp3filename = os.path.join(TEST_DATA_DIR, 'mp3test.mp3')
     wavfilename = os.path.join(TEST_DATA_DIR, 'mp3test.wav')
+
 
 class TestMP3Sndfile_Stereo(TestMP3Sndfile, NumpyTestCase):
     mp3filename = os.path.join(TEST_DATA_DIR, 'mp3test_stereo.mp3')

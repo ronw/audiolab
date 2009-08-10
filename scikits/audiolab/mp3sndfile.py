@@ -143,8 +143,7 @@ class MP3Sndfile(object):
     def _read_next_mp3_frame_into_buffer(self, nframes=0):
         buf = self._madfile.read()
         if buf is None:
-            raise (RuntimeError, 'Asked %d frames, read %d'
-                   % (nframes, len(self._read_buffer)))
+            raise IOError
         # pymad appears to only output 16 bit PCM
         tmp = np.fromstring(buf, np.int16)
         self._read_buffer = np.concatenate((self._read_buffer, tmp))
@@ -164,7 +163,14 @@ class MP3Sndfile(object):
             nsamples = nframes * self.channels
 
         while len(self._read_buffer) < nsamples:
-            self._read_next_mp3_frame_into_buffer(nframes)
+            try:
+                self._read_next_mp3_frame_into_buffer(nframes)
+            except IOError:
+                nframes_read = len(self._read_buffer) / self.channels
+                if self.channels == 1:
+                    nframes_read /= 2
+                raise (RuntimeError, 'Asked %d frames, read %d'
+                       % (nframes, nframes_read))
 
         frames = self._read_buffer[:nsamples]
         if self.channels > 1:
